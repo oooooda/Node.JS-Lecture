@@ -19,10 +19,15 @@ console.log('This is "string"');
 
 console.log("Hi,\nJavascript"); // 줄바꿈 \n
 
-function makeTableRow(a,b,c){
+function makeTableRow01(a,b,c){
     var row = `<tr><td>${a}<\td><td>${b}<\td><td>${c}<\td><td>`;
-    var old ='<tr><td>'+a+'<\td><td>'+b+'<\td><td>'+c+'<\td><td>';
+    old ='<tr><td>'+a+'<\td><td>'+b+'<\td><td>'+c+'<\td><td>';
+    console.log(old);
     return row;
 }
 
-console.log(makeTableRow('aaa','bbb','ccc'));
+console.log(makeTableRow01('aaa','bbb','ccc'));
+
+if(old === makeTableRow01('aaa','bbb','ccc')){
+    console.log("같습니다.");
+}
