@@ -10,6 +10,7 @@ var ListSql = "SELECT id, title, writer, strftime('%Y-%m-%d %H:%M', timestamp, '
 var searchSql = "SELECT id, title, writer, strftime('%Y-%m-%d %H:%M', timestamp, 'localtime') ts, content, hit FROM bbs where id=?";
 var incHSql=`update bbs set hit = (select hit from bbs where id=?)+1 where id =?;`; //hit수 증가하기 위해 선언
 var insertSql=`INSERT INTO bbs (title, writer, content) VALUES(?,?,?)`; // 새로운 내용을 추가하기위한 선언
+var updateSql = `UPDATE bbs SET title=?, writer=?, timestamp=datetime('now'), content=? WHERE id=?`;
 var db = new sqlite3.Database("db/bbs.db");
 
 var app = http.createServer(function(req, res){
@@ -48,6 +49,7 @@ var app = http.createServer(function(req, res){
                 stmt.run(idVal, idVal);
                 stmt.finalize();
                 
+                //데이터를 읽어온다
                 stmt = db.prepare(searchSql);
                 stmt.get(idVal,function(err, row){
                     let trs = template.tableItem(row);
@@ -95,20 +97,18 @@ var app = http.createServer(function(req, res){
      }
      //글 수정하기 화면
      else if (pathname === '/update')
-     {
-         fs.readdir('./data', function(err, files) {
-             let list=template.List(files);
-             let navBar=template.navOp();
-             let title=queryData.title; //유저가 선택한 title
-             fs.readFile(`./data/${title}.txt`, 'utf8',function(err, desc){
-                 let view = require('./view/update');
-                 let html= view.update(list, navBar, title, desc);
-                 
-                 res.writeHead(200);
-                 res.end(html);
-             });
- 
-         });
+     {      
+         let idVal=parseInt(queryData.id);
+         let navBar=template.navOp();
+
+         let stmt = db.prepare(searchSql);
+         stmt.get(idVal,function(err, row){
+                let view = require('./View/update');
+                let html=view.update(navBar,row)
+                res.writeHead(200);
+                res.end(html);
+            });
+            stmt.finalize();
      }
      else if (pathname === '/update_proc')
      {
@@ -120,17 +120,17 @@ var app = http.createServer(function(req, res){
          //데이터가 끝나 end가 옴
          req.on('end',function(){
              let post =qs.parse(body);
-             let oldTitle=post.oldTitle; //title수정을 위해 hidden title을 입력 받음.
+             let idVal=parseInt(post.id); //title수정을 위해 hidden title을 입력 받음.
              let title=post.title;   //title로 입력된 내용
-             let desc=post.desc;     //내용으로 입려된 내용
-             fs.rename(`./data/${oldTitle}.txt`,`./data/${title}.txt`,function(){
-                 fs.writeFile(`./data/${title}.txt`, desc, 'utf8', function(err){
-                     res.writeHead(302,{Location: `/?title=${title}`});  //저장 후 방금 저장된 title로 이동됨.
-                     res.end();
-                 });
-             });
-             
-         });
+             let writer=post.writer;     //내용으로 입려된 내용
+             let content=post.content;
+
+             let stmt = db.prepare(updateSql);
+             stmt.run(title,writer,content,idVal);
+             stmt.finalize();
+            res.writeHead(302,{Location: `/?id=${idVal}`});  //저장 후 방금 저장된 title로 이동됨.
+            res.end();
+         });   
      }
      else if (pathname === '/delete')
      {

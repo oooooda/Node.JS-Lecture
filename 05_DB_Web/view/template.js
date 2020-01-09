@@ -52,8 +52,8 @@ module.exports={
     navList: function(id){
         return `   
             <a href="/">홈으로</a>&nbsp;&nbsp;
-            <a href="/update?title=${id}">수정하기</a>&nbsp;&nbsp; 
-            <a href="/delete?title=${id}">삭제하기</a>`;
+            <a href="/update?id=${id}">수정하기</a>&nbsp;&nbsp; 
+            <a href="/delete?id=${id}">삭제하기</a>`;
     },
     navOp:function(){
         return `<a href="/">홈으로</a>`;
