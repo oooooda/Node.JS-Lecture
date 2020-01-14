@@ -6,11 +6,6 @@ var express = require('express')
 var sqlite3 = require('sqlite3').verbose();
 var bodyParser=require('body-parser'); //3rd party middleware로 프로그램 안에 사용되는 모듈(post가 간단해 진다.)
 var template=require('./view/template');
-const apiKey='a3922b175b8e68284bc508e2b1b63495';
-const apiURI='http://api.openweathermap.org/data/2.5/weather?q=Yongin,kr&units=metric&appid=';
-
-var request = require('request');
-var weatherURI=apiURI + apiKey;
 
 var ListSql = "SELECT id, title, userId, strftime('%Y-%m-%d %H:%M', timestamp, 'localtime') ts, content, hit FROM bbs";
 var searchSql = "SELECT id, title, userId, strftime('%Y-%m-%d %H:%M', timestamp, 'localtime') ts, content, hit FROM bbs where id=?";
@@ -24,23 +19,15 @@ const app = express(); //express라는 객체를 만듬
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static('public'));
 app.get('/',function(req,res){
-    request(weatherURI,function(error,response,data){
-        if(error){
-            throw error;
+let navBar=template.navMain(); 
+    let trs='';
+    db.all(ListSql, function(err, rows){
+        for(let row of rows){
+            trs += template.tableMain(row);
         }
-        var result = JSON.parse(data);
-        let navBar=template.navMain(result); 
-        let trs='';
-        db.all(ListSql, function(err, rows){
-            for(let row of rows){
-                trs += template.tableMain(row);
-            }
-            let view=require('./view/index');
-            let html=view.index(navBar,trs);
-            res.send(html);    
-                                                                                                                                                                                            
-    });
-
+        let view=require('./view/index');
+        let html=view.index(navBar,trs);
+        res.send(html);
     });
 });
 app.get('/id/:id',function(req,res){

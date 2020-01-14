@@ -12,7 +12,8 @@ module.exports={
         return`
             <a href="/">홈으로</a>&nbsp;&nbsp;
             <a href="/create">글쓰기</a>&nbsp;&nbsp;
-            `;
+            <a href="/register">사용자 가입</a>&nbsp;&nbsp;
+            <a href="/login">로그인</a>`;
     },
     navList: function(id){
         return `   
@@ -23,14 +24,14 @@ module.exports={
     navOp:function(){
         return `<a href="/">홈으로</a>`;
     },
-    tableMain: function(row){
+    tableMain: function(row) {
         return `<tr>
             <td>${row.id}</td>
             <td style="text-align: left;"><a href="/id/${row.id}">${row.title}</a></td>
-            <td>${row.userId}</td>
+            <td>${row.name}</td>
             <td>${row.ts}</td>
             <td style="text-align: right;">${row.hit}</td>
-            </tr>`;
+        </tr>`;
     },
     tableItem: function(row){
         let _content=row.content.replace(/\r\n/g, '<br>'); //enter가 제대로 보여지기 위한 작업.(줄바꿈)
