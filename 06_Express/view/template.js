@@ -8,10 +8,12 @@ module.exports={
         list +='</ul>';
         return list;
     },
-    navMain:function(){
+    navMain:function(result){
         return`
             <a href="/">홈으로</a>&nbsp;&nbsp;
-            <a href="/create">글쓰기</a>`;
+            <a href="/create">글쓰기</a>&nbsp;&nbsp;
+            <td>도시명 : ${result.name} 기온 : ${result.main.temp} &deg; 체감온도 : ${result.main.feels_like}&deg;</td>
+            <td><img src="http://openweathermap.org/img/w/${result.weather[0].icon}.png" height="50" width="50"></td>`;
     },
     navList: function(id){
         return `   
